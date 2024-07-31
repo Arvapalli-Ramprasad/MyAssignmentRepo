@@ -1,0 +1,202 @@
+import java.util.*;
+
+public class Main {
+
+
+    // Approach
+
+    /*
+    1) Initialize Global Variables: Define global variables to track the distribution status and shares of Ramu, Sham, and Rahim.
+
+    2) Calculate Shares: Compute the total weight of apples and determine the shares for Ramu (50%), Sham (30%), and Rahim (20%).
+
+    3) Recursive Distribution: Use recursive methods (ram, sham, rahim) to explore all possible combinations of apples, checking
+        if the share can be matched by adding apples sequentially while tracking visited indices.
+
+    4) Print Results: Once a valid distribution is found (i.e., when a share equals zero), print the distribution and proceed to the next person.
+
+    5) Backtracking: After trying a combination, backtrack by removing the last added apple and marking the index as unvisited, then continue with other combinations.
+    */
+
+
+
+
+    // Global declaration of Ramu, sham and Rahim whether there a way to distribute  apples accurately or not
+    static boolean foundRamu = false;
+    static boolean foundSham = false;
+    static boolean foundRahim = false;
+
+     // Global declaration of  share valuees of Ramu, sham and Rahim
+    static int shareOfRamu;
+    static int shareOfSham;
+    static int shareOfRahim;
+
+
+
+    // Recursive Function to find the apples of Ramu
+    public static void rahim(ArrayList<Integer> arr, boolean[] vis, int startInd, int shareOfRahim, List<Integer> ans) {
+         // if share of rahim is equal to zero then print those apples
+        if (shareOfRahim == 0) {
+            System.out.print("Rahim: ");
+             //Printing the apples shared with rahim
+            for (int i : ans) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+
+             //we found the way so put it as true
+            foundRahim = true;
+            return;
+        }
+
+        if (shareOfRahim < 0 || startInd >= arr.size() || foundRahim) {
+            return;
+        }
+
+        if (!vis[startInd]) {//add apple in ans arr
+            vis[startInd] = true;
+            ans.add(arr.get(startInd));
+
+            //increase index and remove index value from rahim value
+            rahim(arr, vis, startInd + 1, shareOfRahim - arr.get(startInd), ans);
+
+            //if returned then remove the last index value from ans arr
+            ans.remove(ans.size() - 1);
+
+            // marking false of particular index because adding the value present at that index leads to exceed the value required for rahim
+            vis[startInd] = false;
+        }
+
+        //check the nextIndex value which is satisfied or not
+        rahim(arr, vis, startInd + 1, shareOfRahim, ans);
+    }
+
+
+
+    // Recursive Function to find the apples of Sham
+    public static void sham(ArrayList<Integer> arr, boolean[] vis, int startInd, int shareOfSham, List<Integer> ans) {
+         // if share of sham is equal to zero then print those apples
+        //& call rahim to find the apples shared to sham
+        if (shareOfSham == 0) {
+            System.out.print("Sham: ");
+            //Printing the apples shared with ram
+            for (int i : ans) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+             //we found the way so put it as true
+            foundSham = true;
+
+            // call rahim to find the apples of rahim
+            rahim(arr, vis, 0, shareOfRahim, new ArrayList<>());
+            return;
+        }
+
+        if (shareOfSham < 0 || startInd >= arr.size() || foundSham) {
+            return;
+        }
+
+        if (!vis[startInd]) {
+            vis[startInd] = true;
+            ans.add(arr.get(startInd));//add apple in ans arr
+
+            //increase index and remove index value from sham value
+            sham(arr, vis, startInd + 1, shareOfSham - arr.get(startInd), ans);
+
+            //if returned then remove the last index value from ans arr
+            ans.remove(ans.size() - 1);
+
+            // marking false of particular index because adding the value present at that index leads to exceed the value required for sham
+            vis[startInd] = false;
+        }
+
+        //check the nextIndex value which is satisfied or not
+        sham(arr, vis, startInd + 1, shareOfSham, ans);
+    }
+
+
+
+
+    // Recursive Function to find the apples of Ramu
+    public static void ram(ArrayList<Integer> arr, boolean[] vis, int startInd, int shareOfRamu, List<Integer> ans) {
+        // if share of ramu is equal to zero then print those apples
+        //& call sham to find the apples shared to sham
+        if (shareOfRamu == 0) {
+            System.out.print("Ramu: ");
+            //Printing the apples shared with ram
+            for (int i : ans) {
+                System.out.print(i + " ");
+            }
+            System.out.println();
+
+            //we found the way so put it as true
+            foundRamu = true;
+
+            // call sham to find the apples of sham
+            sham(arr, vis, 0, shareOfSham,new ArrayList<>());
+            return;
+        }
+
+        if (shareOfRamu < 0 || startInd >= arr.size() || foundRamu) {
+            return;
+        }
+
+        if (!vis[startInd]) {//if not vis index
+            vis[startInd] = true;//mark it as visited
+            ans.add(arr.get(startInd));//add apple in ans arr
+
+            //increase index and remove index value from ram value
+            ram(arr, vis, startInd + 1, shareOfRamu - arr.get(startInd), ans);
+
+            //if returned then remove the last index value from ans arr
+            ans.remove(ans.size() - 1);
+
+            // marking false of particular index because adding the value present at that index leads to exceed the value required for ramu
+            vis[startInd] = false;
+        }
+
+        //check the nextIndex value which is satisfied or not
+        ram(arr, vis, startInd + 1, shareOfRamu, ans);
+    }
+
+    public static void main(String[] args) {
+
+        //Scanner class to take the user input
+        Scanner sc = new Scanner(System.in);
+
+        // ArrayList to store the apples weighted in grams
+        ArrayList<Integer> arr = new ArrayList<>();
+
+        while (true) {
+            int input = sc.nextInt();
+            if (input == -1) {//if -1 entered then stop adding apples in arr
+                break;
+            }
+            arr.add(input);
+        }
+
+        //Finding the total sum of the apple weights
+        int sum = 0;
+        for (int i : arr) {
+            sum += i;
+        }
+
+        //Total weight of apples
+        System.out.println("Total sum: " + sum);
+
+        // Finding the share values of ramu, sham and rahim
+        shareOfRamu = (int) (sum * 0.50);
+        shareOfSham = (int) (sum * 0.30);
+        shareOfRahim = (int) (sum * 0.20);
+
+        System.out.println("Share of Ramu: " + shareOfRamu);
+        System.out.println("Share of Sham: " + shareOfSham);
+        System.out.println("Share of Rahim: " + shareOfRahim);
+
+        // boolean array to track that apple visited or not
+        boolean[] vis = new boolean[arr.size()];
+
+        ram(arr, vis, 0, shareOfRamu, new ArrayList<>());
+
+    }
+}

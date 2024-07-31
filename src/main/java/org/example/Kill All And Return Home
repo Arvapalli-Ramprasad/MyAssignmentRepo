@@ -1,0 +1,118 @@
+import java.util.*;
+
+public class Main {
+
+    // Used references
+    // Used gfg to learn more about
+    // 1.Recursion      https://www.geeksforgeeks.org/recursion-algorithms/
+    // 2.Backtracking   https://www.geeksforgeeks.org/backtracking-algorithms/
+
+
+    // Here's a brief approach for the given code:
+
+    // Initialize the Board: Start by reading the board dimensions, placing soldiers
+    // on the board at specified coordinates, and marking them with 1.
+
+    // Set Starting Conditions: Define the starting position of the "special" castle and
+    // initialize the initial direction to 'D' (down).
+
+    // Recursive Search: Implement a recursive function (solve) that tries to move the
+    // castle in the current direction. If a soldier is encountered, kill it (remove from the board) and turn left, then continue the search in the new direction.
+
+    // Base Case: The recursion terminates when the castle returns to its starting position,
+    // printing the current path.
+
+    // Backtracking: After exploring each path, the function backtracks by restoring the
+    // soldier's position on the board to explore other potential paths.
+
+
+
+    // function to check current row and column are safe
+    static boolean isSafe(int row, int col, int n, int m) {
+        return row >= 0 && col >= 0 && row < n && col < m;
+    }
+
+
+    // Recursive Search: Implement a recursive function (solve) that tries to move the castle in the current direction.
+    // If a soldier is encountered, kill it (remove from the board) and turn left, then continue the search in the new direction.
+    static void solve(int currRow, int currCol, int[][] board, int startRow, int startCol, String path, char currDir) {
+
+
+        // Base Case: The recursion terminates when the castle returns to its
+        // starting position, printing the current path.
+        if (currRow == startRow && currCol == startCol) {
+            System.out.println(path + "\nArrive (" + (startRow) + "," + (startCol) + ")");
+            return;
+        }
+
+        int newRow = currRow, newCol = currCol;
+
+
+        // Determine the next move based on the current direction
+        if (currDir == 'R') newCol--;//Move right
+        else if (currDir=='D')newRow++;//Move down
+        else if (currDir=='L')newCol++;//Move left
+        else if (currDir=='U')newRow--;//Move up
+
+        // If the move is within the bounds of the board
+        if (isSafe(newRow, newCol, board.length, board[0].length)) {
+            String newPath = path + " -> (" + (newRow) + "," + (newCol) + ")";
+
+            // If there's a soldier on the new cell
+            if (board[newRow][newCol] == 1) {
+                board[newRow][newCol] = 0; //(kill it)
+
+                // Determine the new direction after turning left
+                char newDir = ' ';
+                if (currDir == 'R') newDir ='D';
+                else if (currDir=='D') newDir ='L';
+                else if (currDir=='L') newDir ='U';
+                else if (currDir=='U') newDir ='R';
+
+                // Recursive with the new direction
+                solve(newRow, newCol, board, startRow, startCol, newPath + ". Kill and Turn " + newDir, newDir);
+
+                // Backtrack: replace the soldier
+                board[newRow][newCol] = 1;
+            } else {
+                // Recur without changing direction if no soldier is killed
+                solve(newRow, newCol, board, startRow, startCol, newPath, currDir);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        // Define the board dimensions
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+
+        int board[][]=new int[n][m];
+        System.out.println("Enter number of soldiers:-");
+        int numSoldiers = sc.nextInt();
+
+        // Initialize the Board: Start by reading the board dimensions, placing soldiers on the board
+        // at specified coordinates, and marking them with 1.
+        for (int i = 1; i <= numSoldiers; i++) {
+            System.out.println("Enter coordinates for soldier " + i + ": ");
+            int x = sc.nextInt();
+            int y = sc.nextInt();
+            board[x][y]=1;
+        }
+
+        // Set Starting Conditions: Define the starting position of the "special" castle and
+        // initialize the initial direction to 'D' (down).
+
+        System.out.println("Enter the coordinates for your 'special' castle: ");
+        int startRow = sc.nextInt();
+        int startCol = sc.nextInt();
+
+        // Initialize direction to right ('D')
+        char currDir = 'D';
+
+        // Find all possible paths
+        solve(startRow+1, startCol, board, startRow, startCol, "Start (" + (startRow) + "," + (startCol) + ")", currDir);
+    }
+}
