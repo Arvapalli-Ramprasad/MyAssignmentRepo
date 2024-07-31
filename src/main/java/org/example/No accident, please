@@ -1,0 +1,98 @@
+
+Here's the approach:
+Input Representation: Each flight path is represented as a list of coordinates.
+For example, Flight 1: 1,1 2,2 3,3 means the first flight travels from (1,1) to (2,2) and then to (3,3).
+
+Intersection Detection: We check all pairs of flights to see if they intersect at any
+ point (excluding the starting point).
+
+Path Checking: If no intersections are found, we output the paths.
+ If intersections are detected, we may need to adjust the paths or notify about the intersections.
+
+
+
+ import java.util.ArrayList;
+ import java.util.HashSet;
+ import java.util.List;
+ import java.util.Set;
+
+ class FlightPath {
+
+     Approach
+     // 1. Each flight path is represented by a list of coordinates (x, y).
+     // 2. For each pair of flights, check if any of their paths intersect.
+     // 3. If an intersection is detected, adjust one or both flight paths to avoid the
+     // 4. This could be done by slightly altering the y-coordinate of the flight's path when
+     // an intersection is detected.
+     // 5. Print the adjusted paths.
+
+     // This class contains a list of coordinates representing the flight path.
+     List<int[]> path;
+     public FlightPath(int[][] coordinates) {
+         path = new ArrayList<>();
+         for (int[] coord : coordinates) {
+             path.add(coord);
+         }
+     }
+
+     // Method to check if this flight path intersects with another flight path
+     public boolean intersects(FlightPath other) {
+         Set<String> visited = new HashSet<>();
+         for (int[] coord : path) {
+             visited.add(coord[0] + "," + coord[1]);
+         }
+         for (int[] coord : other.path) {
+             if (visited.contains(coord[0] + "," + coord[1])) {
+                 return true;
+             }
+         }
+         return false;
+     }
+
+     // Method to adjust the flight path to avoid intersection
+     public void adjustPath() {
+         for (int i=0;i<path.size();i++) {
+             // Adjust the y-coordinate by +1 to avoid intersection
+             path.get(i)[1]+=1;
+         }
+     }
+
+     // This method to print the flight path
+     public void printPath(String flightName) {
+         System.out.println(flightName+":");
+         for (int[]coord:path) {
+             System.out.print("("+coord[0]+","+coord[1]+") ");
+         }
+         System.out.println();
+     }
+ }
+
+ public class Main {
+     public static void main(String[] args) {
+         // Sample flight paths
+         int[][]flight1Coords = {{1,1},{2,2},{3,3}};
+         int[][]flight2Coords = {{1,1},{2,4},{3,2}};
+         int[][]flight3Coords = {{1,1},{4,2},{3,4}};
+
+         FlightPath flight1 = new FlightPath(flight1Coords);
+         FlightPath flight2 = new FlightPath(flight2Coords);
+         FlightPath flight3 = new FlightPath(flight3Coords);
+
+         // List of all flight paths
+         FlightPath[] flights = {flight1, flight2, flight3};
+
+         // Check for intersections and adjust paths
+         for (int i=0; i<flights.length;i++) {
+             for (int j=i+1; j<flights.length;j++) {
+                 if (flights[i].intersects(flights[j])) {
+                     flights[j].adjustPath();  // Adjust the path to avoid intersection
+                 }
+             }
+         }
+
+         // Print adjusted flight paths
+         flight1.printPath("Flight 1");
+         flight2.printPath("Flight 2");
+         flight3.printPath("Flight 3");
+     }
+ }
